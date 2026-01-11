@@ -194,7 +194,7 @@ Respond with a JSON object matching this structure:
 }`;
 
   // Try primary model first, fallback to lite if it fails
-  const modelsToTry = ["gemini-2.5-flash", "gemini-1.5-flash"] as const;
+  const modelsToTry = ["gemini-2.5-flash", "gemini-2.5-flash-lite"] as const;
   let lastError: Error | null = null;
   
   for (const modelName of modelsToTry) {
