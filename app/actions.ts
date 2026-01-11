@@ -97,14 +97,14 @@ export async function comparePhones(
       phones = phones.slice(0, 10);
     }
 
-    console.log(`🔍 Comparing ${phones.length} phones with priorities: ${priorities.join(", ")}`);
+    console.log(`Comparing ${phones.length} phones with priorities: ${priorities.join(", ")}`);
 
     // Have AI compare and select
     let comparison: PhoneComparison;
     let sources: Array<{ title: string; uri: string }> = [];
 
     if (useGrounding) {
-      console.log("🌐 Using Google Search grounding...");
+      console.log("Using Google Search grounding...");
       const result = await compareWithGrounding({
         phones,
         budget,
@@ -127,7 +127,7 @@ export async function comparePhones(
     }
 
     const processingTime = Date.now() - startTime;
-    console.log(`✅ Comparison complete in ${processingTime}ms`);
+    console.log(`Comparison complete in ${processingTime}ms`);
 
     return {
       comparison,

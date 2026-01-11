@@ -122,7 +122,7 @@ export default function ComparePage() {
       }
 
       // Have AI pick the top 2 phones based on priorities
-      console.log("🤖 AI selecting top 2 phones based on priorities...");
+      console.log("AI selecting top 2 phones based on priorities...");
       
       const result = await runAIComparison(filteredPhones, budgetNum, priorityList);
 
@@ -222,7 +222,7 @@ export default function ComparePage() {
             disabled={loading || phonesLoading}
             className="w-full bg-gradient-to-r from-primary-600 to-accent-600 text-white font-bold py-4 px-6 rounded-xl hover:shadow-xl transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {phonesLoading ? "⏳ Loading phones..." : loading ? "🤖 AI is analyzing..." : "🔍 Find & Compare Best 2 Phones"}
+            {phonesLoading ? "Loading phones..." : loading ? "AI is analyzing..." : "Find & Compare Best 2 Phones"}
           </button>
         </form>
       </div>
