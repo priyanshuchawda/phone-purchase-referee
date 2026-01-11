@@ -224,11 +224,11 @@ Respond with a JSON object matching this structure:
       const parsed = JSON.parse(jsonText);
       const validated = PhoneComparisonSchema.parse(parsed);
       
-      console.log(`✅ Successfully used model: ${modelName}`);
+      console.log(`Successfully used model: ${modelName}`);
       return validated;
       
     } catch (error) {
-      console.error(`❌ Model ${modelName} failed:`, error instanceof Error ? error.message : 'Unknown error');
+      console.error(`Model ${modelName} failed:`, error instanceof Error ? error.message : 'Unknown error');
       lastError = error instanceof Error ? error : new Error('Unknown error');
       
       // Continue to the next model
