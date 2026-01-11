@@ -193,34 +193,56 @@ Respond with a JSON object matching this structure:
   "summary": "string (2-3 paragraphs)"
 }`;
 
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-  });
+  // Try primary model first, fallback to lite if it fails
+  const modelsToTry = ["gemini-2.0-flash-exp", "gemini-1.5-flash"];
+  let lastError: Error | null = null;
+  
+  for (let i = 0; i < modelsToTry.length; i++) {
+    const modelName = modelsToTry[i];
+    
+    try {
+      console.log(`Attempting with model: ${modelName}`);
+      
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+      });
 
-  const result = await model.generateContent(prompt);
-  const text = result.response.text();
-  
-  // Extract JSON from response (handle markdown code blocks)
-  let jsonText = text;
-  if (text.includes("```json")) {
-    jsonText = text.split("```json")[1]?.split("```")[0]?.trim() || text;
-  } else if (text.includes("```")) {
-    jsonText = text.split("```")[1]?.split("```")[0]?.trim() || text;
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      
+      // Extract JSON from response (handle markdown code blocks)
+      let jsonText = text;
+      if (text.includes("```json")) {
+        jsonText = text.split("```json")[1]?.split("```")[0]?.trim() || text;
+      } else if (text.includes("```")) {
+        jsonText = text.split("```")[1]?.split("```")[0]?.trim() || text;
+      }
+      
+      // Log for debugging
+      console.log(`Model ${modelName} - Raw response:`, text.substring(0, 500));
+      console.log(`Model ${modelName} - Extracted JSON:`, jsonText.substring(0, 500));
+      
+      // Try parsing the response
+      const parsed = JSON.parse(jsonText);
+      const validated = PhoneComparisonSchema.parse(parsed);
+      
+      console.log(`✅ Successfully used model: ${modelName}`);
+      return validated;
+      
+    } catch (error) {
+      console.error(`❌ Model ${modelName} failed:`, error instanceof Error ? error.message : 'Unknown error');
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+      
+      // If this is not the last model, continue to the next one
+      if (i < modelsToTry.length - 1) {
+        console.log(`Falling back to next model...`);
+        continue;
+      }
+    }
   }
   
-  // Log for debugging
-  console.log("Raw response from Gemini:", text.substring(0, 500));
-  console.log("Extracted JSON:", jsonText.substring(0, 500));
-  
-  try {
-    // Try parsing without sanitization first
-    const parsed = JSON.parse(jsonText);
-    return PhoneComparisonSchema.parse(parsed);
-  } catch (error) {
-    console.error("Failed to parse JSON:", error);
-    console.error("JSON text that failed:", jsonText);
-    throw new Error(`Failed to parse AI response: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
+  // If all models failed, throw the last error
+  throw new Error(`All Gemini models failed. Last error: ${lastError?.message || 'Unknown error'}`);
 }
 
 /**
