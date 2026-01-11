@@ -194,12 +194,10 @@ Respond with a JSON object matching this structure:
 }`;
 
   // Try primary model first, fallback to lite if it fails
-  const modelsToTry = ["gemini-2.0-flash-exp", "gemini-1.5-flash"];
+  const modelsToTry = ["gemini-2.5-flash", "gemini-1.5-flash"] as const;
   let lastError: Error | null = null;
   
-  for (let i = 0; i < modelsToTry.length; i++) {
-    const modelName = modelsToTry[i];
-    
+  for (const modelName of modelsToTry) {
     try {
       console.log(`Attempting with model: ${modelName}`);
       
@@ -233,11 +231,8 @@ Respond with a JSON object matching this structure:
       console.error(`❌ Model ${modelName} failed:`, error instanceof Error ? error.message : 'Unknown error');
       lastError = error instanceof Error ? error : new Error('Unknown error');
       
-      // If this is not the last model, continue to the next one
-      if (i < modelsToTry.length - 1) {
-        console.log(`Falling back to next model...`);
-        continue;
-      }
+      // Continue to the next model
+      console.log(`Falling back to next model...`);
     }
   }
   
